@@ -30,4 +30,17 @@ class ahb_agent_config extends uvm_object;
     // Property: no_parameter_check
     // Determine whether the agent should produce errors when the parameters are set incorrectly
     bit no_parameter_check = 1'b0;
+
+    // Property: agent_mode
+    // The mode the agent operates in
+    ahb_agent_mode_e agent_mode = AHB_SUBORDINATE_AGENT;
+
+    // Group: Constructors
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Constructor: new
+    function new(string name = "ahb_agent_config");
+        super.new(name);
+    endfunction : new
+
 endclass : ahb_agent_config
