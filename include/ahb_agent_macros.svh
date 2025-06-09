@@ -26,7 +26,7 @@
     parameter int HPROT_WIDTH = 4,  \
     parameter int HMASTER_WIDTH = 0
 
-`defines _AHB_AGENT_PARAM_MAP \
+`define _AHB_AGENT_PARAM_MAP \
     .ADDR_WIDTH(ADDR_WIDTH),      \
     .DATA_WIDTH(DATA_WIDTH),      \
     .HBURST_WIDTH(HBURST_WIDTH),  \

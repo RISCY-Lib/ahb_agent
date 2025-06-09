@@ -123,7 +123,8 @@ class ahb_agent #(
             `uvm_warning(
                 get_type_name(),
                 $sformatf(
-                    "DATA_WIDTH is set to %0d. AHB Spec recommends DATA_WIDTH be 32, 64, 128, 256. (Section 2.2)"
+                    "DATA_WIDTH is set to %0d. AHB Spec recommends DATA_WIDTH be 32, 64, 128, 256. (Section 2.2)",
+                    DATA_WIDTH
                 )
             )
         end

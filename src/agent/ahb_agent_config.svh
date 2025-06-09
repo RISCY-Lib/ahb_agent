@@ -32,7 +32,7 @@ class ahb_agent_config extends uvm_object;
     bit no_parameter_check = 1'b0;
 
     // Property: agent_mode
-    // The mode the agent operates in
+    // The mode the agent operates in.
     ahb_agent_mode_e agent_mode = AHB_SUBORDINATE_AGENT;
 
     // Group: Constructors

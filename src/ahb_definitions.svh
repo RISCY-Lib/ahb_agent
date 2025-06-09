@@ -74,3 +74,9 @@ typedef enum logic[1:0] {
     NONSEQ = 2'b10,
     SEQ    = 2'b11
 } ahb_trans_e;
+
+// Enum: ahb_write_e
+typedef enum logic {
+    AHB_WRITE = 1'b1,
+    AHB_READ  = 1'b0
+} ahb_write_e;

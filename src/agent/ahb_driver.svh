@@ -17,7 +17,7 @@
  ************************************************************************************/
 
 // Class: ahb_agent_pkg.ahb_driver
-class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction);
+class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`_AHB_AGENT_PARAM_MAP));
     `uvm_component_param_utils(ahb_driver#(`_AHB_AGENT_PARAM_MAP))
     `uvm_type_name_decl("ahb_driver")
 
@@ -50,7 +50,7 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction);
     // - Fetches the config if it isn't set
     // - Fetches the virtual interface if it isn't set in the config
     virtual function void build_phase(uvm_phase phase);
-        super.build_phase(phase):
+        super.build_phase(phase);
     endfunction : build_phase
 
     // Group: UVM Run Phases
@@ -81,11 +81,18 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction);
     // Task: subordinate_run_phase
     // The UVM Run-Phase for a subordinate agent
     virtual task subordinate_run_phase(uvm_phase phase);
-        ahb_transaction addr_trans;  // The transaction in the address phase
-        ahb_transaction data_trans;  // The transaction in the data phase
+        ahb_transaction#(`_AHB_AGENT_PARAM_MAP) addr_trans;  // The transaction in the address phase
+        ahb_transaction#(`_AHB_AGENT_PARAM_MAP) data_trans;  // The transaction in the data phase
 
         addr_trans = null;
         data_trans = null;
+
+        fork
+            forever begin
+                m_vif.hready = m_vif.hreadyout;
+                @(m_vif.hreadyout);
+            end
+        join_none
 
         m_vif.haddr     = '0;
         m_vif.hburst    = SINGLE;
@@ -108,20 +115,61 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction);
         m_vif.hwrite    = 1'b0;
 
         m_vif.hsel      = 1'b0;
-        m_vif.hready    = 1'b1;
 
         forever begin
-            if (addr_trans == null && data_trans == null) begin
+            @(posedge m_vif.hclk);
+
+            // First Check if the data_transaction is done
+            if (m_vif.hready && data_trans != null) begin
+                if (data_trans.write == AHB_WRITE) begin
+                    data_trans.data = m_vif.hwdata;
+                end
+                else begin
+                    data_trans.data = m_vif.hrdata;
+                end
+
+                seq_item_port.put(data_trans);
+                data_trans = addr_trans;
+                addr_trans = null;
+            end
+            else if (m_vif.hready) begin
+                data_trans = addr_trans;
+                addr_trans = null;
+            end
+            else begin
+                if (data_trans == null) begin
+                    `uvm_warning(get_type_name(), "Found wait state when no data phases is active")
+                end
+                else begin
+                    data_trans.wait_states += 1;
+                end
+            end
+
+            // Check if there is a data_trans to update the transaction with
+            if (data_trans != null) begin
+                m_vif.hwdata = data_trans.data;
+            end
+
+            // Check if we should fetch the next transaction
+            if (addr_trans == null && seq_item_port.has_do_available()) begin
                 seq_item_port.get(addr_trans);
             end
 
-            @(posedge m_vif.hclk);
-
-            m_vif.haddr = addr_trans.addr;
-            m_vif.hburst = addr_trans.burst;
+            // Check if there is a transaction in the address phase
+            if (addr_trans != null) begin
+                m_vif.hsel = 1'b1;
+                m_vif.htrans = NONSEQ;
+                m_vif.haddr  = addr_trans.addr;
+                m_vif.hwrite = addr_trans.write;
+            end
+            else begin
+                m_vif.hsel = 1'b0;
+                m_vif.htrans = IDLE;
+            end
 
         end
     endtask : subordinate_run_phase
+
 
     // Task: manager_run_phase
     // The UVM Run-Phase for a manager agent

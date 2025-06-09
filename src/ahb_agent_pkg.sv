@@ -23,8 +23,12 @@ package ahb_agent_pkg;
     import uvm_pkg::*;
     `include "uvm_macros.svh"
 
-    // Agent Imports
+    // General Includes
+    `include "ahb_agent_macros.svh"
 
+    `include "ahb_definitions.svh"
+
+    // Agent Includes
     `include "agent/ahb_agent_config.svh"
     `include "agent/ahb_transaction.svh"
     `include "agent/ahb_monitor.svh"
