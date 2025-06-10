@@ -63,6 +63,6 @@ interface ahb_vip_if #(
     // Group: Multiplexor Signals
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-   logic hready;
+    logic hready;
 
 endinterface : ahb_vip_if

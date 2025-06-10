@@ -27,6 +27,10 @@ class ahb_agent_config extends uvm_object;
     // Determine whether the agent is passive or active
     uvm_active_passive_enum is_active = UVM_ACTIVE;
 
+    // Property: has_functional_coverage
+    // Determine if the agent has functional coverage
+    bit has_functional_coverage = 1'b1;
+
     // Property: no_parameter_check
     // Determine whether the agent should produce errors when the parameters are set incorrectly
     bit no_parameter_check = 1'b0;
@@ -34,6 +38,10 @@ class ahb_agent_config extends uvm_object;
     // Property: agent_mode
     // The mode the agent operates in.
     ahb_agent_mode_e agent_mode = AHB_SUBORDINATE_AGENT;
+
+    // Reference: vif_handle
+    // The uvm_config_db 'field_name' handle to the virtual interface
+    string vif_handle="m_vif";
 
     // Group: Constructors
     ////////////////////////////////////////////////////////////////////////////////////////////////

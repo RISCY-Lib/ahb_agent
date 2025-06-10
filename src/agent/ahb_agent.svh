@@ -30,6 +30,26 @@ class ahb_agent #(
     // The agent config for this AHB Agent
     ahb_agent_config m_cfg;
 
+    // Reference: ap
+    // Analysis Port for AHB Transactions. Internal reference to monitor AP
+    uvm_analysis_port #(ahb_transaction#(`_AHB_AGENT_PARAM_MAP)) ap;
+
+    // Property: m_monitor
+    // The UVM Monitor for the AHB Agent
+    ahb_monitor#(`_AHB_AGENT_PARAM_MAP) m_monitor;
+
+    // Property: m_sequencer
+    // The UVM Sequencer for the AHB Agent
+    uvm_sequencer#(ahb_transaction#(`_AHB_AGENT_PARAM_MAP)) m_sequencer;
+
+    // Property: m_driver
+    // The UVM Driver for the AHB Agent
+    ahb_driver#(`_AHB_AGENT_PARAM_MAP) m_driver;
+
+    // Property: m_cov
+    // The UVM Coverage Collector for the AHB Agent
+    ahb_cov#(`_AHB_AGENT_PARAM_MAP) m_cov;
+
     // Group: Constructors
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +67,9 @@ class ahb_agent #(
     // This phase performs the following
     // - Get the configuration object if not set
     // - Check the parameters fall within the AHB Spec
-    //
+    // - Build the monitor
+    // - Build the driver and sequencer if active
+    // - Build the coverage collector if enabled in the config
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
@@ -62,7 +84,52 @@ class ahb_agent #(
 
         check_params();
 
+        // Instantiate the Monitor (always present)
+        m_monitor = ahb_monitor#(`_AHB_AGENT_PARAM_MAP)::type_id::create("m_monitor", this);
+        m_monitor.m_cfg = m_cfg;
+
+        ap = new("ap", this);
+
+        // Build the driver and sequencer if active
+        if (m_cfg.is_active == UVM_ACTIVE) begin
+            m_driver = ahb_driver#(`_AHB_AGENT_PARAM_MAP)::type_id::create("m_driver", this);
+            m_driver.m_cfg = m_cfg;
+
+            m_sequencer = uvm_sequencer#(ahb_transaction#(`_AHB_AGENT_PARAM_MAP))::
+                            type_id::create("m_sequencer", this);
+        end
+
+        // Build the coverage if there is functional coverage
+        if (m_cfg.has_functional_coverage) begin
+            m_cov = ahb_cov#(`_AHB_AGENT_PARAM_MAP)::type_id::create("m_cov", this);
+            m_cov.m_cfg = m_cfg;
+        end
+
     endfunction : build_phase
+
+    // Function: connect_phase
+    // The connect_phase for the AHB Agent.
+    //
+    // This phase performs the following
+    // - Connect the monitor to the agent AP
+    // - Connect the driver and sequencer if the agent is active
+    // - Connect the monitor and coverage collector if there is functional coverage
+    virtual function void connect_phase(uvm_phase phase);
+        super.connect_phase(phase);
+
+        // Connect the analysis port of the monitor
+        ap = m_monitor.ap;
+
+        // Connect driver and sequencer if the agent is active
+        if (m_cfg.is_active == UVM_ACTIVE) begin
+            m_driver.seq_item_port.connect(m_sequencer.seq_item_export);
+        end
+
+        // Connect the coverage collector if there is functional coverage
+        if (m_cfg.has_functional_coverage) begin
+            m_monitor.ap.connect(m_cov.analysis_export);
+        end
+    endfunction : connect_phase
 
     // Function: check_params
     // A function which checks that the params fall within the limits perscribed by the spec

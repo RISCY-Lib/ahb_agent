@@ -48,9 +48,32 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
     //
     // Performs the following
     // - Fetches the config if it isn't set
-    // - Fetches the virtual interface if it isn't set in the config
+    // - Fetches the virtual interface
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+
+        if (m_cfg == null) begin
+            if (!uvm_config_db#(ahb_agent_config)::get(this, "", "m_cfg", m_cfg)) begin
+                `uvm_fatal(
+                    get_type_name(),
+                    "Cannot get() configuration 'm_cfg' from uvm_config_db. Did you set() it?"
+                )
+            end
+        end
+
+        if (m_vif == null) begin
+            if (!uvm_config_db#(virtual ahb_vip_if#(`_AHB_AGENT_PARAM_MAP))::get(
+                this, "", m_cfg.vif_handle, m_vif
+            )) begin
+                `uvm_fatal(
+                    get_type_name(),
+                    $sformatf(
+                        "Cannot get() configuration '%s' from uvm_config_db. Did you set() it?",
+                        m_cfg.vif_handle
+                    )
+                )
+            end
+        end
     endfunction : build_phase
 
     // Group: UVM Run Phases
