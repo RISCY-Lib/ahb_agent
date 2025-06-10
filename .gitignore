@@ -4,6 +4,4 @@
 # Tooling directories
 .dvt/*
 
-# Waveform View
-uvm/verisium_debug_logs/
-uvm/verisium_debug_logs_backup/
+

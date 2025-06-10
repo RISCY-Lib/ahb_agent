@@ -182,6 +182,7 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
             if (addr_trans != null) begin
                 m_vif.hsel = 1'b1;
                 m_vif.htrans = NONSEQ;
+                m_vif.hsize = addr_trans.size;
                 m_vif.haddr  = addr_trans.addr;
                 m_vif.hwrite = addr_trans.write;
             end
