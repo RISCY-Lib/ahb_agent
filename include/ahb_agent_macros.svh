@@ -33,4 +33,27 @@
     .HPROT_WIDTH(HPROT_WIDTH),    \
     .HMASTER_WIDTH(HMASTER_WIDTH)
 
+`define AHB_IF_INST(ADDR, DATA, HBURST, HPROT, HMASTER, IF_NAME=AHB, CLK_NAME=hclk, RST_NAME=hresetn) \
+    ahb_vip_if #(                            \
+        .ADDR_WIDTH(ADDR),                   \
+        .DATA_WIDTH(DATA),                   \
+        .HBURST_WIDTH(HBURST),               \
+        .HPROT_WIDTH(HPROT),                 \
+        .HMASTER_WIDTH(HMASTER)              \
+    ) IF_NAME (                              \
+        .hclk(CLK_NAME),                     \
+        .hreset_n(RST_NAME)                  \
+    );                                       \
+    initial begin                            \
+        uvm_config_db#(                      \
+            virtual ahb_vip_if #(            \
+                .ADDR_WIDTH(ADDR),           \
+                .DATA_WIDTH(DATA),           \
+                .HBURST_WIDTH(HBURST),       \
+                .HPROT_WIDTH(HPROT),         \
+                .HMASTER_WIDTH(HMASTER)      \
+            )                                \
+        )::set(null, "*", "m_vif", IF_NAME); \
+    end
+
 `endif // __AHB_AGENT_MACROS__SVH__

@@ -27,15 +27,15 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
 
     // Property: write
     // Whether the transaction is read or write
-    ahb_write_e write = AHB_WRITE;
+    rand ahb_write_e write = AHB_WRITE;
 
     // Property: addr
     // The address of the transaction
-    logic [ADDR_WIDTH-1:0] addr = '0;
+    rand logic [ADDR_WIDTH-1:0] addr = '0;
 
     // Property: data
     // The data transmitted by this transaction
-    logic [DATA_WIDTH-1:0] data = '0;
+    rand logic [DATA_WIDTH-1:0] data = '0;
 
     // Property: wait_states
     // The number of wait states in the transaction.

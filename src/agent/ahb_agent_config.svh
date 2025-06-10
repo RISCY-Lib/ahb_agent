@@ -18,7 +18,7 @@
 
 // Class: ahb_agent_pkg.ahb_agent_config
 class ahb_agent_config extends uvm_object;
-    `uvm_component_utils(ahb_agent_config)
+    `uvm_object_utils(ahb_agent_config)
 
     // Group: Class Properties
     ////////////////////////////////////////////////////////////////////////////////////////////////

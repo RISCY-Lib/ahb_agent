@@ -22,8 +22,8 @@
 interface ahb_vip_if #(
     `_AHB_AGENT_PARAM_DEFS
 )(
-    logic hreset_n,
-    logic hclk
+    input logic hreset_n,
+    input logic hclk
 );
 
     localparam int _STRB_WIDTH = DATA_WIDTH/8;
@@ -35,7 +35,7 @@ interface ahb_vip_if #(
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     logic [    ADDR_WIDTH-1:0] haddr;
-    logic [  HBURST_WIDTH-1:0] hburst;
+    logic [ _HBURST_WIDTH-1:0] hburst;
     logic                      hmastlock;
     logic [  _HPROT_WIDTH-1:0] hprot;
     logic [               2:0] hsize;
