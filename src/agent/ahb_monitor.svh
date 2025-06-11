@@ -85,4 +85,49 @@ class ahb_monitor#(`_AHB_AGENT_PARAM_DEFS) extends uvm_monitor;
 
     endfunction : build_phase
 
+    // Group: UVM Run Phases
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Function: run_phase
+    // The run_phase for the ahb_monitor
+    virtual task run_phase(uvm_phase phase);
+        ahb_transaction #(`_AHB_AGENT_PARAM_MAP) trans;
+
+        forever begin
+            @(posedge m_vif.hclk);
+
+            if (!m_vif.hreset_n) begin
+                trans = null;
+                continue;
+            end
+
+            if (m_vif.hready) begin
+                if (trans != null) begin
+                    if (trans.write == AHB_READ) begin
+                        trans.data = m_vif.hrdata;
+                    end
+                    else begin
+                        trans.data = m_vif.hwdata;
+                    end
+
+                    ap.write(trans);
+                    trans = null;
+                end
+
+                if (trans == null && m_vif.hsel && m_vif.htrans == NONSEQ) begin
+                    trans = ahb_transaction#(`_AHB_AGENT_PARAM_MAP)::type_id::create("monitor_trans");
+                    trans.addr = m_vif.haddr;
+                    trans.write = ahb_write_e'(m_vif.hwrite);
+                    trans.size = ahb_size_e'(m_vif.hsize);
+                end
+            end
+            else begin
+                if (trans != null) begin
+                    trans.wait_states++;
+                end
+            end
+        end
+
+    endtask : run_phase
+
 endclass : ahb_monitor
