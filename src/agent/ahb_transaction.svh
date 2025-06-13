@@ -62,8 +62,8 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
     // Group: Constraints
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    constraint write_before_data_c { solve write before data; };
-    constraint size_before_alignment_c { solve size before addr; };
+    constraint write_before_data_c { solve write before data; }
+    constraint size_before_alignment_c { solve size before addr; }
 
     constraint valid_size_c {
         DATA_WIDTH <= 8  -> size <= BYTE_SIZE;
@@ -74,7 +74,7 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
         DATA_WIDTH <= 256 -> size <= EIGHT_WORD_SIZE;
         DATA_WIDTH <= 512 -> size <= SIXTEEN_WORD_SIZE;
         DATA_WIDTH <= 1024 -> size <= THIRTY_TWO_WORD_SIZE;
-    };
+    }
 
     constraint addr_alignment_c {
         size == HALFWORD_SIZE -> addr[0] == 1'b0;
@@ -84,7 +84,7 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
         size == EIGHT_WORD_SIZE -> addr[4:0] == 5'h00;
         size == SIXTEEN_WORD_SIZE -> addr[5:0] == 6'h00;
         size == THIRTY_TWO_WORD_SIZE -> addr[6:0] == 7'h00;
-    };
+    }
 
     function void pre_randomize();
         super.pre_randomize();
