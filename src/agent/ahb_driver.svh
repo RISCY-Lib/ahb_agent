@@ -151,7 +151,7 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
                     data_trans.data = m_vif.hrdata;
                 end
 
-                `uvm_info(get_type_name(), "Finished Transaction", UVM_INFO)
+                `uvm_info(get_type_name(), "Finished Transaction", UVM_HIGH)
                 seq_item_port.put(data_trans);
                 data_trans = addr_trans;
                 addr_trans = null;
@@ -176,7 +176,7 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
 
             // Check if we should fetch the next transaction
             if (addr_trans == null && seq_item_port.has_do_available()) begin
-                `uvm_info(get_type_name(), "Starting Transaction", UVM_INFO)
+                `uvm_info(get_type_name(), "Starting Transaction", UVM_HIGH)
                 seq_item_port.get(addr_trans);
             end
 

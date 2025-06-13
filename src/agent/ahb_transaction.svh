@@ -125,4 +125,21 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
         `uvm_print_enum(ahb_size_e, size)
         `uvm_print_int(wait_states, $size(wait_states))
     endfunction : do_print
+
+    // Function do_record
+    /**
+     * @see uvm_pkg::uvm_transaction.do_record
+     * @param recorder -
+     */
+    virtual function void do_record(uvm_recorder recorder);
+        super.do_record(recorder);
+
+        `uvm_record_enum("rand_type", rand_type, ahb_agent_mode_e)
+        `uvm_record_enum("write", write, ahb_write_e)
+        `uvm_record_field("addr", addr)
+        `uvm_record_field("data", data)
+        `uvm_record_enum("size", size, ahb_size_e)
+        `uvm_record_int("wait_states", wait_states, 32)
+
+    endfunction : do_record
 endclass : ahb_transaction
