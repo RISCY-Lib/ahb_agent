@@ -119,6 +119,19 @@ class ahb_monitor#(`_AHB_AGENT_PARAM_DEFS) extends uvm_monitor;
                     trans.addr = m_vif.haddr;
                     trans.write = ahb_write_e'(m_vif.hwrite);
                     trans.size = ahb_size_e'(m_vif.hsize);
+
+                    for (int i = 0; i < int'(trans.size); i++) begin
+                        if (trans.addr[i] !== 1'b0) begin
+                            `uvm_error(
+                                get_type_name(),
+                                $sformatf(
+                                    "AHB Address has bit %0d set when hsize=%s",
+                                    i, trans.size.name()
+                                )
+                            )
+                            break;
+                        end
+                    end
                 end
             end
             else begin
