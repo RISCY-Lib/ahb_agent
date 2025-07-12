@@ -142,6 +142,9 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
         forever begin
             @(posedge m_vif.hclk);
 
+            if (!m_vif.hreset_n)
+                continue;
+
             // First Check if the data_transaction is done
             if (m_vif.hready && data_trans != null) begin
                 if (data_trans.write == AHB_WRITE) begin
