@@ -53,6 +53,18 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
     // Set by the agent in AHB_MANAGER_AGENT mode.
     rand ahb_size_e size = WORD_SIZE;
 
+    // Property: wstrb
+    // The write strobe use in this transaction
+    // Set by the sequence in AHB_SUBORDINATE_AGENT mode.
+    // Set by the agent in AHB_MANAGER_AGENT mode.
+    rand logic [DATA_WIDTH/8-1:0] wstrb = '1;
+
+    // Property: hprot
+    // The protection unit support for the tranaction.
+    // Set by the sequence in AHB_SUBORDINATE_AGENT mode.
+    // Set by the agent in AHB_MANAGER_AGENT mode.
+    rand logic [HPROT_WIDTH-1:0] hprot = '0;
+
     // Property: wait_states
     // The number of wait states in the transaction.
     // Set by sequence in AHB_MANAGER_AGENT mode.
@@ -100,6 +112,8 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
             write.rand_mode(0);
             addr.rand_mode(0);
             size.rand_mode(0);
+            hprot.rand_mode(0);
+            wstrb.rand_mode(0);
             return;
         end
 
