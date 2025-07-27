@@ -65,6 +65,13 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
     // Set by the agent in AHB_MANAGER_AGENT mode.
     rand logic [HPROT_WIDTH-1:0] hprot = '0;
 
+    // Poperty: error
+    // The Subordinate Error signal from the transaction.
+    // Set by the sequence in AHB_MANAGER_AGENT mode.
+    // set by the agent in AHB_SUBORDINATE_AGENT mode.
+    rand bit error = 1'b0;
+
+
     // Property: wait_states
     // The number of wait states in the transaction.
     // Set by sequence in AHB_MANAGER_AGENT mode.
@@ -105,6 +112,7 @@ class ahb_transaction#(`_AHB_AGENT_PARAM_DEFS) extends uvm_sequence_item;
             return;
         end
         if (rand_type == AHB_SUBORDINATE_AGENT) begin
+            error.rand_mode(0);
             wait_states.rand_mode(0);
             return;
         end

@@ -16,30 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ************************************************************************************/
 
-// Package: ahb_agent_pkg
-package ahb_agent_pkg;
+package ahb_tb_example_pkg;
 
-    // UVM Imports
     import uvm_pkg::*;
     `include "uvm_macros.svh"
 
-    // General Includes
-    `include "ahb_agent_macros.svh"
+    import ahb_agent_pkg::*;
 
-    `include "ahb_definitions.svh"
+    `include "uvm_src/ahb_env_example.svh"
+    `include "uvm_src/ahb_seq.svh"
+    `include "uvm_src/ahb_test.svh"
 
-    // Agent Includes
-    `include "agent/ahb_agent_config.svh"
-    `include "agent/ahb_transaction.svh"
-
-    `include "agent/ahb_monitor.svh"
-    `include "agent/ahb_sequencer.svh"
-    `include "agent/ahb_driver.svh"
-    `include "agent/ahb_cov.svh"
-    `include "agent/ahb_agent.svh"
-
-    `include "seqs/ahb_requester_reactive_seq.svh"
-    `include "seqs/ahb_requester_no_wait_states_seq.svh"
-    `include "seqs/ahb_requester_wait_states_seq.svh"
-
-endpackage : ahb_agent_pkg
+endpackage

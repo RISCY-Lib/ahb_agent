@@ -33,6 +33,10 @@ class ahb_monitor#(`_AHB_AGENT_PARAM_DEFS) extends uvm_monitor;
     // The analysis port which this monitor uses to export to
     uvm_analysis_port #(ahb_transaction#(`_AHB_AGENT_PARAM_MAP)) ap;
 
+    // Property: req_ap
+    // The analysis port which sends request transactions to be used by reactive agent sequences
+    uvm_analysis_port #(ahb_transaction#(`_AHB_AGENT_PARAM_MAP)) req_ap;
+
     // Reference: m_cfg
     // The agent config for this AHB agent
     ahb_agent_config m_cfg;
@@ -133,6 +137,14 @@ class ahb_monitor#(`_AHB_AGENT_PARAM_DEFS) extends uvm_monitor;
                             )
                             break;
                         end
+                    end
+
+                    if (m_cfg.agent_mode == AHB_MANAGER_AGENT) begin
+                        ahb_transaction#(`_AHB_AGENT_PARAM_MAP) req;
+
+                        req = trans.clone();
+                        req.data = m_vifg.hwdata;
+                        req_ap.write(req);
                     end
                 end
             end

@@ -87,9 +87,9 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
         if (m_cfg.agent_mode == AHB_SUBORDINATE_AGENT) begin
             subordinate_run_phase(phase);
         end
-        // else if (m_cfg.agent_mode == AHB_MANAGER_AGENT) begin
-        //     manager_run_phase(phase);
-        // end
+        else if (m_cfg.agent_mode == AHB_MANAGER_AGENT) begin
+            manager_run_phase(phase);
+        end
         else begin
             `uvm_error(
                 get_type_name(),
@@ -205,7 +205,41 @@ class ahb_driver#(`_AHB_AGENT_PARAM_DEFS) extends uvm_driver#(ahb_transaction#(`
     // Task: manager_run_phase
     // The UVM Run-Phase for a manager agent
     virtual task manager_run_phase(uvm_phase phase);
+        ahb_transaction#(`_AHB_AGENT_PARAM_MAP) trans;
+        int wait_states;
 
+        fork
+            forever begin
+                m_vif.hready = m_vif.hreadyout;
+                @(m_vif.hreadyout);
+            end
+        join_none
+
+        m_vif.hrdata = '0;
+        m_vif.hreadyout = 1'b1;
+        m_vif.hresp = 1'b0;
+        m_vif.hexokay = 1'b1;
+
+        forever begin
+            m_vif.hreadyout = 1'b1;
+
+            seq_item_port.get_next_item(trans);
+            m_vif.hreadyout = 1'b0;
+
+            repeat(trans.wait_states) begin
+                @(posedge m_vif.hclk);
+            end
+
+            if (trans.write == AHB_READ) begin
+                m_vif.hrdata = trans.data;
+            end
+
+            m_vif.hreadyout = 1'b1;
+            m_vif.hresp = trans.error;
+
+            @(posedge m_vif.hclk);
+            seq_item_port.item_done();
+        end
     endtask : manager_run_phase
 
 endclass
